@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Rotating Shield | Coin Style</title>
+    <title>3D Rotating Shield | Security System</title>
     <style>
         * {
             margin: 0;
@@ -40,16 +40,17 @@
             perspective: 1000px;
         }
 
-        /* Red Background Plate - STATIC 3D container */
+        /* Red Background Plate - STATIC (teri red-bg.png image use karega) */
         .plate {
-            background: radial-gradient(circle at 30% 30%, #8B0000, #3a0000);
+            background: url('red-bg.png') no-repeat center center;
+            background-size: cover;
             width: 350px;
             height: 350px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
             cursor: grab;
             border: 3px solid #ff3333;
             position: relative;
@@ -68,7 +69,7 @@
             transition: transform 0.03s linear;
         }
 
-        /* Shield Front Side */
+        /* Shield Front Side (teri shield-only.png image) */
         .shield-front {
             position: absolute;
             width: 100%;
@@ -103,7 +104,7 @@
 
         .shield-back span {
             color: #ff6666;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             text-align: center;
             font-family: monospace;
@@ -207,7 +208,7 @@
         <div class="plate" id="plate">
             <div class="shield-3d" id="shield3d">
                 <div class="shield-front">
-                    <img src="shield.png" alt="Shield Front">
+                    <img src="shield-only.png" alt="Shield Front">
                 </div>
                 <div class="shield-back">
                     <span>🛡️<br>SECURE</span>
@@ -237,7 +238,7 @@
             📛 ID: A7X-23 &nbsp;&nbsp;|&nbsp;&nbsp; ⚙ SYS-04
         </div>
         <div class="info-footer">
-            🪙 3D Coin-Style Rotation | Drag to rotate | Release = Auto
+            🪙 3D Coin-Style Rotation | Drag left/right to rotate | Release = Auto
         </div>
     </div>
 </div>
@@ -253,13 +254,12 @@
     let isDragging = false;
     let animationId = null;
 
-    // Auto rotation - Coin style (Y axis rotation)
     function startAutoRotate() {
         if (animationId) cancelAnimationFrame(animationId);
         
         function rotateLoop() {
             if (!autoRotate) return;
-            autoAngle += 1.2;  // Speed of 3D rotation
+            autoAngle += 1.2;
             if (autoAngle >= 360) autoAngle -= 360;
             shield3d.style.transform = `rotateY(${autoAngle}deg)`;
             animationId = requestAnimationFrame(rotateLoop);
@@ -306,7 +306,7 @@
         }
         
         let deltaX = clientX - dragStartX;
-        let newAngle = currentManualAngle + deltaX * 0.8;  // Sensitivity
+        let newAngle = currentManualAngle + deltaX * 0.8;
         newAngle = newAngle % 360;
         shield3d.style.transform = `rotateY(${newAngle}deg)`;
     }
@@ -322,17 +322,13 @@
         startAutoRotate();
     }
 
-    // Mouse Events
     plate.addEventListener('mousedown', startDrag);
     window.addEventListener('mousemove', onDrag);
     window.addEventListener('mouseup', stopDrag);
-
-    // Touch Events
     plate.addEventListener('touchstart', startDrag, { passive: false });
     window.addEventListener('touchmove', onDrag, { passive: false });
     window.addEventListener('touchend', stopDrag);
 
-    // Start
     shield3d.style.transform = `rotateY(0deg)`;
     startAutoRotate();
 </script>
