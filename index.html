@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Rotating Shield | Security System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', 'Monaco', monospace;
+            padding: 20px;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Plate + Shield Section */
+        .plate-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .plate {
+            background: radial-gradient(circle at 30% 30%, #2a3a3a, #0f1a1a);
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0,0,0,0.5);
+            cursor: grab;
+            border: 2px solid cyan;
+            transition: box-shadow 0.2s;
+        }
+
+        .plate:active {
+            cursor: grabbing;
+        }
+
+        .plate:hover {
+            box-shadow: 0 0 45px rgba(0, 255, 255, 0.5);
+        }
+
+        .shield {
+            width: 200px;
+            filter: drop-shadow(0 0 10px cyan);
+            pointer-events: none;
+            transition: transform 0.03s linear;
+        }
+
+        /* Status Panel - Exactly like your image */
+        .status-panel {
+            background: rgba(0, 0, 0, 0.85);
+            border-left: 5px solid cyan;
+            padding: 25px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            min-width: 280px;
+            font-weight: bold;
+        }
+
+        .status-panel h1 {
+            color: #ff4444;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            border-bottom: 2px solid cyan;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .status-line {
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .status-label {
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            color: #0f0;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .threat-high {
+            color: #ff4444;
+            text-shadow: 0 0 5px red;
+            animation: blink 1s infinite;
+        }
+
+        .energy-bar {
+            background: #333;
+            height: 12px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            width: 98%;
+            height: 100%;
+            background: linear-gradient(90deg, #0f0, #afa);
+            border-radius: 10px;
+        }
+
+        .id-box {
+            background: #111;
+            padding: 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-top: 15px;
+            text-align: center;
+            color: cyan;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .info-footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: cyan;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 700px) {
+            .plate { width: 260px; height: 260px; }
+            .shield { width: 150px; }
+            .status-panel { padding: 15px 20px; min-width: 240px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="plate-section">
+        <div class="plate" id="plate">
+            <img class="shield" id="shield" src="shield.png" alt="Shield">
+        </div>
+    </div>
+
+    <div class="status-panel">
+        <h1>⚠ SECURITY ALERT ⚠</h1>
+        <div class="status-line">
+            <span class="status-label">SHIELD STATUS:</span>
+            <span class="status-value">🟢 SYSTEM PROTECTION ACTIVE</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">ENERGY LEVEL:</span>
+            <span class="status-value">98%</span>
+        </div>
+        <div class="energy-bar">
+            <div class="energy-fill"></div>
+        </div>
+        <div class="status-line">
+            <span class="status-label">THREAT LEVEL:</span>
+            <span class="status-value threat-high">⚠ HIGH ⚠</span>
+        </div>
+        <div class="id-box">
+            📛 ID: A7X-23 &nbsp;&nbsp;|&nbsp;&nbsp; ⚙ SYS-04
+        </div>
+        <div class="info-footer">
+            🖱️ Drag shield to rotate | Release = Auto-rotate
+        </div>
+    </div>
+</div>
+
+<script>
+    const shield = document.getElementById('shield');
+    const plate = document.getElementById('plate');
+
+    let autoRotate = true;
+    let autoAngle = 0;
+    let dragStartAngle = 0;
+    let currentManualAngle = 0;
+    let isDragging = false;
+
+    // Auto rotation loop (slow)
+    function autoRotateLoop() {
+        if (!autoRotate) return;
+        autoAngle += 0.6;  // Smooth slow rotation
+        if (autoAngle >= 360) autoAngle -= 360;
+        shield.style.transform = `rotate(${autoAngle}deg)`;
+        requestAnimationFrame(autoRotateLoop);
+    }
+
+    function getCurrentRotation(element) {
+        const transform = element.style.transform;
+        if (!transform || transform === 'none') return 0;
+        const match = transform.match(/rotate\(([-\d.]+)deg\)/);
+        if (match && match[1]) return parseFloat(match[1]);
+        return 0;
+    }
+
+    function getMouseAngle(event, centerElement) {
+        const rect = centerElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        let clientX, clientY;
+        if (event.touches) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+
+        const deltaX = clientX - centerX;
+        const deltaY = clientY - centerY;
+        return Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+    }
+
+    function startDrag(event) {
+        event.preventDefault();
+        isDragging = true;
+        autoRotate = false;
+
+        let currentRotation = getCurrentRotation(shield);
+        currentManualAngle = currentRotation;
+        dragStartAngle = getMouseAngle(event, plate);
+    }
+
+    function onDrag(event) {
+        if (!isDragging) return;
+        event.preventDefault();
+
+        const currentMouseAngle = getMouseAngle(event, plate);
+        let deltaAngle = currentMouseAngle - dragStartAngle;
+        let newAngle = currentManualAngle + deltaAngle;
+        newAngle = newAngle % 360;
+        shield.style.transform = `rotate(${newAngle}deg)`;
+    }
+
+    function stopDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+
+        const finalAngle = getCurrentRotation(shield);
+        currentManualAngle = finalAngle;
+        autoRotate = true;
+        autoAngle = finalAngle;
+        autoRotateLoop();
+    }
+
+    // Mouse Events
+    plate.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+
+    // Touch Events for Mobile
+    plate.addEventListener('touchstart', startDrag, { passive: false });
+    window.addEventListener('touchmove', onDrag, { passive: false });
+    window.addEventListener('touchend', stopDrag);
+
+    // Start auto rotation
+    autoRotateLoop();
+    shield.style.transform = `rotate(0deg)`;
+</script>
+</body>
+  </html>
