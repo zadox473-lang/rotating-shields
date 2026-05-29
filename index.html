@@ -33,7 +33,7 @@
             width: 100%;
         }
 
-        /* Plate + Shield Section */
+        /* Plate Section - BACKGROUND STATIC HAI */
         .plate-section {
             flex: 1;
             min-width: 300px;
@@ -42,17 +42,17 @@
         }
 
         .plate {
-            background: radial-gradient(circle at 30% 30%, #2a3a3a, #0f1a1a);
+            background: radial-gradient(circle at 30% 30%, #8B0000, #3a0000);
             width: 350px;
             height: 350px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
             cursor: grab;
-            border: 2px solid cyan;
-            transition: box-shadow 0.2s;
+            border: 3px solid #ff3333;
+            position: relative;
         }
 
         .plate:active {
@@ -60,20 +60,23 @@
         }
 
         .plate:hover {
-            box-shadow: 0 0 45px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 45px rgba(255, 0, 0, 0.6);
         }
 
+        /* SIRF SHIELD GHUMEGI, PLATE STATIC */
         .shield {
             width: 200px;
-            filter: drop-shadow(0 0 10px cyan);
+            filter: drop-shadow(0 0 10px #ff6666);
             pointer-events: none;
             transition: transform 0.03s linear;
+            position: relative;
+            z-index: 10;
         }
 
-        /* Status Panel - Exactly like your image */
+        /* Status Panel */
         .status-panel {
             background: rgba(0, 0, 0, 0.85);
-            border-left: 5px solid cyan;
+            border-left: 5px solid #ff4444;
             padding: 25px 30px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
@@ -86,7 +89,7 @@
             color: #ff4444;
             font-size: 1.5rem;
             letter-spacing: 2px;
-            border-bottom: 2px solid cyan;
+            border-bottom: 2px solid #ff4444;
             display: inline-block;
             margin-bottom: 20px;
         }
@@ -136,7 +139,7 @@
             font-family: monospace;
             margin-top: 15px;
             text-align: center;
-            color: cyan;
+            color: #ff8888;
         }
 
         @keyframes blink {
@@ -147,7 +150,7 @@
         .info-footer {
             margin-top: 20px;
             font-size: 0.8rem;
-            color: cyan;
+            color: #ff8888;
             text-align: center;
             background: rgba(0,0,0,0.5);
             padding: 8px;
@@ -191,7 +194,7 @@
             📛 ID: A7X-23 &nbsp;&nbsp;|&nbsp;&nbsp; ⚙ SYS-04
         </div>
         <div class="info-footer">
-            🖱️ Drag shield to rotate | Release = Auto-rotate
+            🖱️ Drag shield to rotate | Release = Auto-rotate (Clockwise)
         </div>
     </div>
 </div>
@@ -206,10 +209,10 @@
     let currentManualAngle = 0;
     let isDragging = false;
 
-    // Auto rotation loop (slow)
+    // AUTO ROTATION - CLOCKWISE (angle + direction)
     function autoRotateLoop() {
         if (!autoRotate) return;
-        autoAngle += 0.6;  // Smooth slow rotation
+        autoAngle += 0.8;  // + = Clockwise direction
         if (autoAngle >= 360) autoAngle -= 360;
         shield.style.transform = `rotate(${autoAngle}deg)`;
         requestAnimationFrame(autoRotateLoop);
@@ -284,9 +287,9 @@
     window.addEventListener('touchmove', onDrag, { passive: false });
     window.addEventListener('touchend', stopDrag);
 
-    // Start auto rotation
+    // Start auto rotation (Clockwise)
     autoRotateLoop();
     shield.style.transform = `rotate(0deg)`;
 </script>
 </body>
-  </html>
+</html>
