@@ -40,7 +40,7 @@
             perspective: 1000px;
         }
 
-        /* Red Background Plate - STATIC (teri red-bg.png image use karega) */
+        /* Red Background - Static */
         .plate {
             background: url('red-bg.png') no-repeat center center;
             background-size: cover;
@@ -53,14 +53,13 @@
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
             cursor: grab;
             border: 3px solid #ff3333;
-            position: relative;
         }
 
         .plate:active {
             cursor: grabbing;
         }
 
-        /* 3D Shield Container - Coin style rotation */
+        /* 3D Shield Container */
         .shield-3d {
             width: 200px;
             height: 200px;
@@ -69,7 +68,7 @@
             transition: transform 0.03s linear;
         }
 
-        /* Shield Front Side (teri shield-only.png image) */
+        /* Front Side */
         .shield-front {
             position: absolute;
             width: 100%;
@@ -86,28 +85,22 @@
             filter: drop-shadow(0 0 10px #ff6666);
         }
 
-        /* Shield Back Side */
+        /* Back Side - Same Image */
         .shield-back {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
             transform: rotateY(180deg);
-            background: radial-gradient(circle, #2a2a2a, #1a1a1a);
-            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #ff6666;
-            box-shadow: inset 0 0 20px rgba(255,0,0,0.3);
         }
 
-        .shield-back span {
-            color: #ff6666;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            font-family: monospace;
+        .shield-back img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0 10px #ff6666);
         }
 
         /* Status Panel */
@@ -208,10 +201,10 @@
         <div class="plate" id="plate">
             <div class="shield-3d" id="shield3d">
                 <div class="shield-front">
-                    <img src="shield-only.png" alt="Shield Front">
+                    <img src="shield-only.png" alt="Shield">
                 </div>
                 <div class="shield-back">
-                    <span>🛡️<br>SECURE</span>
+                    <img src="shield-only.png" alt="Shield">
                 </div>
             </div>
         </div>
@@ -238,7 +231,7 @@
             📛 ID: A7X-23 &nbsp;&nbsp;|&nbsp;&nbsp; ⚙ SYS-04
         </div>
         <div class="info-footer">
-            🪙 3D Coin-Style Rotation | Drag left/right to rotate | Release = Auto
+            🪙 3D Coin-Style Rotation | Drag left/right | Release = Auto
         </div>
     </div>
 </div>
@@ -322,13 +315,17 @@
         startAutoRotate();
     }
 
+    // Mouse Events
     plate.addEventListener('mousedown', startDrag);
     window.addEventListener('mousemove', onDrag);
     window.addEventListener('mouseup', stopDrag);
+
+    // Touch Events
     plate.addEventListener('touchstart', startDrag, { passive: false });
     window.addEventListener('touchmove', onDrag, { passive: false });
     window.addEventListener('touchend', stopDrag);
 
+    // Start
     shield3d.style.transform = `rotateY(0deg)`;
     startAutoRotate();
 </script>
