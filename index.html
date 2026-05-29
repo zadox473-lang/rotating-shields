@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rotating Shield | Security System</title>
+    <title>3D Rotating Shield | Coin Style</title>
     <style>
         * {
             margin: 0;
@@ -37,9 +37,10 @@
             min-width: 300px;
             display: flex;
             justify-content: center;
+            perspective: 1000px;
         }
 
-        /* Red Background Plate - STATIC */
+        /* Red Background Plate - STATIC 3D container */
         .plate {
             background: radial-gradient(circle at 30% 30%, #8B0000, #3a0000);
             width: 350px;
@@ -51,23 +52,64 @@
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
             cursor: grab;
             border: 3px solid #ff3333;
+            position: relative;
         }
 
         .plate:active {
             cursor: grabbing;
         }
 
-        /* Sirf Shield rotate hoga - Center se */
-        .shield {
+        /* 3D Shield Container - Coin style rotation */
+        .shield-3d {
             width: 200px;
-            height: auto;
-            filter: drop-shadow(0 0 10px #ff6666);
-            pointer-events: none;
-            /* YEH IMPORTANT HAI - Center se rotate hoga */
-            transform-origin: center center;
-            transition: transform 0.02s linear;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.03s linear;
         }
 
+        /* Shield Front Side */
+        .shield-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shield-front img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0 10px #ff6666);
+        }
+
+        /* Shield Back Side */
+        .shield-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+            background: radial-gradient(circle, #2a2a2a, #1a1a1a);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ff6666;
+            box-shadow: inset 0 0 20px rgba(255,0,0,0.3);
+        }
+
+        .shield-back span {
+            color: #ff6666;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        /* Status Panel */
         .status-panel {
             background: rgba(0, 0, 0, 0.85);
             border-left: 5px solid #ff4444;
@@ -153,7 +195,7 @@
 
         @media (max-width: 700px) {
             .plate { width: 260px; height: 260px; }
-            .shield { width: 150px; }
+            .shield-3d { width: 150px; height: 150px; }
             .status-panel { padding: 15px 20px; min-width: 240px; }
         }
     </style>
@@ -163,7 +205,14 @@
 <div class="container">
     <div class="plate-section">
         <div class="plate" id="plate">
-            <img class="shield" id="shield" src="shield.png" alt="Shield">
+            <div class="shield-3d" id="shield3d">
+                <div class="shield-front">
+                    <img src="shield.png" alt="Shield Front">
+                </div>
+                <div class="shield-back">
+                    <span>🛡️<br>SECURE</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -188,62 +237,43 @@
             📛 ID: A7X-23 &nbsp;&nbsp;|&nbsp;&nbsp; ⚙ SYS-04
         </div>
         <div class="info-footer">
-            🖱️ Drag shield to rotate | Release = Auto-rotate (Clockwise)
+            🪙 3D Coin-Style Rotation | Drag to rotate | Release = Auto
         </div>
     </div>
 </div>
 
 <script>
-    const shield = document.getElementById('shield');
+    const shield3d = document.getElementById('shield3d');
     const plate = document.getElementById('plate');
 
     let autoRotate = true;
     let autoAngle = 0;
-    let dragStartAngle = 0;
+    let dragStartX = 0;
     let currentManualAngle = 0;
     let isDragging = false;
     let animationId = null;
 
-    // Auto rotation - Sirf apni jagah pe ghoomega (clockwise)
+    // Auto rotation - Coin style (Y axis rotation)
     function startAutoRotate() {
         if (animationId) cancelAnimationFrame(animationId);
         
         function rotateLoop() {
             if (!autoRotate) return;
-            autoAngle += 0.6;
+            autoAngle += 1.2;  // Speed of 3D rotation
             if (autoAngle >= 360) autoAngle -= 360;
-            shield.style.transform = `rotate(${autoAngle}deg)`;
+            shield3d.style.transform = `rotateY(${autoAngle}deg)`;
             animationId = requestAnimationFrame(rotateLoop);
         }
         
         rotateLoop();
     }
 
-    function getCurrentRotation(element) {
-        const transform = element.style.transform;
+    function getCurrentRotation() {
+        const transform = shield3d.style.transform;
         if (!transform || transform === 'none') return 0;
-        const match = transform.match(/rotate\(([-\d.]+)deg\)/);
+        const match = transform.match(/rotateY\(([-\d.]+)deg\)/);
         if (match && match[1]) return parseFloat(match[1]);
         return 0;
-    }
-
-    function getMouseAngle(event, centerElement) {
-        const rect = centerElement.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        let clientX, clientY;
-        if (event.touches) {
-            clientX = event.touches[0].clientX;
-            clientY = event.touches[0].clientY;
-        } else {
-            clientX = event.clientX;
-            clientY = event.clientY;
-        }
-
-        const deltaX = clientX - centerX;
-        const deltaY = clientY - centerY;
-        return Math.atan2(deltaY, deltaX) * 180 / Math.PI;
     }
 
     function startDrag(event) {
@@ -252,28 +282,40 @@
         autoRotate = false;
         
         if (animationId) cancelAnimationFrame(animationId);
-
-        let currentRotation = getCurrentRotation(shield);
-        currentManualAngle = currentRotation;
-        dragStartAngle = getMouseAngle(event, plate);
+        
+        let clientX;
+        if (event.touches) {
+            clientX = event.touches[0].clientX;
+        } else {
+            clientX = event.clientX;
+        }
+        
+        dragStartX = clientX;
+        currentManualAngle = getCurrentRotation();
     }
 
     function onDrag(event) {
         if (!isDragging) return;
         event.preventDefault();
-
-        const currentMouseAngle = getMouseAngle(event, plate);
-        let deltaAngle = currentMouseAngle - dragStartAngle;
-        let newAngle = currentManualAngle + deltaAngle;
+        
+        let clientX;
+        if (event.touches) {
+            clientX = event.touches[0].clientX;
+        } else {
+            clientX = event.clientX;
+        }
+        
+        let deltaX = clientX - dragStartX;
+        let newAngle = currentManualAngle + deltaX * 0.8;  // Sensitivity
         newAngle = newAngle % 360;
-        shield.style.transform = `rotate(${newAngle}deg)`;
+        shield3d.style.transform = `rotateY(${newAngle}deg)`;
     }
 
     function stopDrag() {
         if (!isDragging) return;
         isDragging = false;
-
-        const finalAngle = getCurrentRotation(shield);
+        
+        const finalAngle = getCurrentRotation();
         currentManualAngle = finalAngle;
         autoRotate = true;
         autoAngle = finalAngle;
@@ -291,7 +333,7 @@
     window.addEventListener('touchend', stopDrag);
 
     // Start
-    shield.style.transform = `rotate(0deg)`;
+    shield3d.style.transform = `rotateY(0deg)`;
     startAutoRotate();
 </script>
 </body>
