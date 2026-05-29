@@ -22,7 +22,6 @@
             padding: 20px;
         }
 
-        /* Main Container */
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -33,7 +32,6 @@
             width: 100%;
         }
 
-        /* Plate Section - BACKGROUND STATIC HAI */
         .plate-section {
             flex: 1;
             min-width: 300px;
@@ -41,17 +39,17 @@
             justify-content: center;
         }
 
+        /* Red Background Plate - Ye STATIC hai, kabhi nahi hilega */
         .plate {
-            background: radial-gradient(circle at 30% 30%, #8B0000, #3a0000);
+            background: url('red-bg.png') no-repeat center center;
+            background-size: cover;
             width: 350px;
             height: 350px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
             cursor: grab;
-            border: 3px solid #ff3333;
             position: relative;
         }
 
@@ -59,18 +57,14 @@
             cursor: grabbing;
         }
 
-        .plate:hover {
-            box-shadow: 0 0 45px rgba(255, 0, 0, 0.6);
-        }
-
-        /* SIRF SHIELD GHUMEGI, PLATE STATIC */
+        /* Sirf Shield Shape - Ye rotate hoga */
         .shield {
-            width: 200px;
-            filter: drop-shadow(0 0 10px #ff6666);
+            width: 250px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255,0,0,0.5));
             pointer-events: none;
             transition: transform 0.03s linear;
-            position: relative;
-            z-index: 10;
+            transform-origin: center center;
         }
 
         /* Status Panel */
@@ -159,7 +153,7 @@
 
         @media (max-width: 700px) {
             .plate { width: 260px; height: 260px; }
-            .shield { width: 150px; }
+            .shield { width: 180px; }
             .status-panel { padding: 15px 20px; min-width: 240px; }
         }
     </style>
@@ -169,7 +163,7 @@
 <div class="container">
     <div class="plate-section">
         <div class="plate" id="plate">
-            <img class="shield" id="shield" src="shield.png" alt="Shield">
+            <img class="shield" id="shield" src="shield-only.png" alt="Shield">
         </div>
     </div>
 
@@ -209,10 +203,10 @@
     let currentManualAngle = 0;
     let isDragging = false;
 
-    // AUTO ROTATION - CLOCKWISE (angle + direction)
+    // Auto rotation - Sirf Clockwise
     function autoRotateLoop() {
         if (!autoRotate) return;
-        autoAngle += 0.8;  // + = Clockwise direction
+        autoAngle += 0.6;
         if (autoAngle >= 360) autoAngle -= 360;
         shield.style.transform = `rotate(${autoAngle}deg)`;
         requestAnimationFrame(autoRotateLoop);
@@ -282,12 +276,12 @@
     window.addEventListener('mousemove', onDrag);
     window.addEventListener('mouseup', stopDrag);
 
-    // Touch Events for Mobile
+    // Touch Events
     plate.addEventListener('touchstart', startDrag, { passive: false });
     window.addEventListener('touchmove', onDrag, { passive: false });
     window.addEventListener('touchend', stopDrag);
 
-    // Start auto rotation (Clockwise)
+    // Start
     autoRotateLoop();
     shield.style.transform = `rotate(0deg)`;
 </script>
